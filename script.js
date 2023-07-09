@@ -35,6 +35,10 @@ const displayArchived = () => {
     renderData(filterArc);
 }
 
+const displayAllTheBooks = () => {
+    renderData(allBooks);
+}
+
 const renderData = (books) => {
     const totalPage = books.length / itemsPerPage
     pageStatus.innerText = activePage + ' / ' + totalPage;
@@ -46,7 +50,7 @@ const renderData = (books) => {
     // books = []
     if(sliced.length){
             sliced.forEach((book, index) => {
-            const {img, author, title, year} = book
+            const {img, author, title, year, id} = book
             const row = `
             
             <tr>
@@ -63,14 +67,16 @@ const renderData = (books) => {
                 <td>${author.length ? author : 'N/A' }</td>
                 <td>${year}</td>
                 <td class="d-flex align-items-center justify-content-around">
-                    <i class="fa fa-heart fs-5 text-danger"></i>
-                    <i class="fa fa-archive fs-5"></i>
+                    <i onclick="getFav('${id}')" class="fa fa-heart fs-5 text-danger"></i>
+                    <i onclick="getArc('${id}')" class="fa fa-archive fs-5 text-warning"></i>
                 </td>
                 </tr>
             `
+           
 
             tBody.innerHTML += row;
-        })
+           
+        });
     } else {
         tBody.innerHTML = `
         <tr>
@@ -79,6 +85,17 @@ const renderData = (books) => {
         `
     }
 }
+
+const getArc = (id) => {
+    const favIcon = allBooks.find((book) => book.id == id );
+    console.log(favIcon)
+}
+
+const getFav = (id) => {
+    const arcIcon = allBooks.find((book) => book.id == id );
+    console.log(arcIcon);
+}
+
 
 nextBtn.addEventListener("click", () => {
     if(activePage >= (allBooks.length / itemsPerPage)){
@@ -101,5 +118,5 @@ prevBtn.addEventListener("click", () => {
 
 favBooks.addEventListener("click", displayFavorites);
 archived.addEventListener("click", displayArchived);
-allTheBooks.addEventListener("click", renderData);
+allTheBooks.addEventListener("click", displayAllTheBooks);
 
