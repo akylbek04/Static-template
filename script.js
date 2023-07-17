@@ -10,10 +10,13 @@ const allTheBooks = document.querySelector("#allBooks");
 const favBooks = document.querySelector("#favoriteBooks");
 const archived = document.querySelector("#archivedBooks");
 const searchInput = document.querySelector("#searchInput")
+const searchBtn = document.querySelector("#button-addon2");
+const closeButton = document.querySelector("#input-group");
 let allBooks = []
 let activePage = 1;
 let itemsPerPage = 5;
 let filteredData = [];
+
 
 
 
@@ -32,6 +35,7 @@ const displayFavorites = () => {
     const filterFav = allBooks.filter(el => el.favorite === true);
     console.log(filterFav)
     renderData(filterFav);
+
     
 }
 
@@ -73,8 +77,8 @@ const renderData = (books) => {
             <td>${author.length ? author : 'N/A' }</td>
             <td>${year}</td>
             <td class="d-flex align-items-center justify-content-around">
-            <i onclick="getFav('${id}')" class="fa fa-heart fs-5 text-danger"></i>
-            <i onclick="getArc('${id}')" class="fa fa-archive fs-5 text-warning"></i>
+            <i onclick="getFav('${id}', event)" class="fa fa-heart fs-5 text-secondary"></i>
+            <i onclick="getArc('${id}', event)" class="fa fa-archive fs-5 text-secondary"></i>
             </td>
             </tr>
             `
@@ -92,14 +96,87 @@ const renderData = (books) => {
     }
 }
 
-const getArc = (id) => {
+const getFav = (id, event) => {
     const favIcon = allBooks.find((book) => book.id == id );
-    console.log(favIcon)
+   
+    
+    const editUrl = url +"/"+ favIcon.id.toString();
+    if(favIcon.favorite === false && event.target.className.includes("text-secondary")){
+        event.target.classList.remove("text-secondary");
+        event.target.classList.add("text-danger");
+        fetch(editUrl, {
+            method: "PUT",
+            headers: {"Content-Type" : "application/json"},
+            body: JSON.stringify({
+                favorite: true
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(err => console.log(err))
+
+    } else {
+        event.target.classList.remove("text-secondary");
+        event.target.classList.add("text-success");
+        fetch(editUrl, {
+            method: "PUT",
+            headers: {"Content-Type" : "application/json"},
+            body: JSON.stringify({
+                favorite: false
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(err => console.log(err))
+    }
 }
 
-const getFav = (id) => {
+const getArc = (id, event) => {
     const arcIcon = allBooks.find((book) => book.id == id );
     console.log(arcIcon);
+
+    const editUrl = url +"/"+ arcIcon.id.toString();
+    if(arcIcon.archived === false && event.target.className.includes("text-secondary")){
+        event.target.classList.remove("text-secondary");
+        event.target.classList.add("text-warning");
+        fetch(editUrl, {
+            method: "PUT",
+            headers: {"Content-Type" : "application/json"},
+            body: JSON.stringify({
+                archived: true
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(err => console.log(err));
+        
+    } else {
+
+        event.target.classList.remove("text-secondary");
+        event.target.classList.add("text-success");
+
+        fetch(editUrl, {
+            method: "PUT",
+            headers: {"Content-Type" : "application/json"},
+            body: JSON.stringify({
+                archived: false
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(err => console.log(err))
+        
+        arcColor = "text-secondary";
+    }
+
 }
 
 
@@ -115,7 +192,7 @@ nextBtn.addEventListener("click", () => {
 
 prevBtn.addEventListener("click", () => {
     if(activePage < 2){
-        prevBtnBtn.ariaDisabled = true;
+        prevBtn.ariaDisabled = true;
     } else {
         activePage--;
     }
@@ -132,7 +209,17 @@ const searchBook = () => {
     renderData(res);
 }
 
-searchInput.addEventListener('keyup', searchBook)
+const closeBtn = () => {
+    const btn = document.createElement("div");
+    btn.className = "btn btn-outline-danger";
+    btn.type = button;
+    btn.id = "button-addon1"
+    btn.innerText = "X";
+    closeButton.appendChild(btn);
+}
+
+searchInput.addEventListener('keyup', closeBtn)
+searchBtn.addEventListener('click', searchBook)
 favBooks.addEventListener("click", displayFavorites);
 archived.addEventListener("click", displayArchived);
 allTheBooks.addEventListener("click", displayAllTheBooks);
